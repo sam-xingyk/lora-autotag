@@ -21,6 +21,7 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          scope: samxings-projects
           working-directory: .
           vercel-args: '--prod --confirm'
         env:
@@ -29,7 +30,7 @@ jobs:
 
       - name: Deploy (fallback)
         if: failure()
-        run: npx vercel deploy --prebuilt --prod --yes --token "$VERCEL_TOKEN" --project "$VERCEL_PROJECT_ID"
+        run: npx vercel --prod --confirm --token "$VERCEL_TOKEN" --scope "samxings-projects" --project "$VERCEL_PROJECT_ID"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
