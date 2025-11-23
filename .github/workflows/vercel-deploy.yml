@@ -20,7 +20,8 @@ jobs:
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-project-name: lora-autotag
+          scope: sam-xingyk
           working-directory: .
           vercel-args: '--prod'
         env:
