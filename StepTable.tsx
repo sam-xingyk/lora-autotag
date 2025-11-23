@@ -166,8 +166,10 @@ export default function StepTable({
 
   const callOpenAI = async (base64Content: string, prompt: string, mimeType: string) => {
     if (!baseUrl) throw new Error("Base URL is required for OpenAI compatible providers.");
-    
-    const url = `${baseUrl.replace(/\/+$/, '')}/chat/completions`;
+
+    const isDoubao = baseUrl.includes('/doubao-api');
+    const endpoint = isDoubao ? '/api/v3/chat/completions' : '/v1/chat/completions';
+    const url = `${baseUrl.replace(/\/+$/, '')}${endpoint}`;
     const safeModelName = modelName.trim(); // Safety Trim
     
     const body = {
