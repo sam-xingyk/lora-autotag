@@ -168,30 +168,45 @@ export default function StepTable({
     if (!baseUrl) throw new Error("Base URL is required for OpenAI compatible providers.");
 
     const isDoubao = baseUrl.includes('/doubao-api');
-    const endpoint = isDoubao ? '/api/v3/chat/completions' : '/v1/chat/completions';
+    const safeModelName = modelName.trim();
+    const isEP = safeModelName.startsWith('ep-');
+    const endpoint = isDoubao
+      ? '/api/v3/chat/completions'
+      : isEP ? '/v1/responses' : '/v1/chat/completions';
     const url = `${baseUrl.replace(/\/+$/, '')}${endpoint}`;
-    const safeModelName = modelName.trim(); // Safety Trim
-    
-    const body = {
-      model: safeModelName,
-      messages: [
-        {
-          role: "user",
-          content: [
-            { type: "text", text: prompt },
-            { 
-              type: "image_url", 
-              image_url: { 
-                url: `data:${mimeType};base64,${base64Content}`,
-                detail: "auto"
-              } 
+
+    const body = isEP
+      ? {
+          model: safeModelName,
+          input: [
+            {
+              role: 'user',
+              content: [
+                { type: 'input_text', text: prompt },
+                { type: 'input_image', image: { data: base64Content, mime_type: mimeType } }
+              ]
             }
           ]
         }
-      ],
-      max_tokens: 4096
-      // Removed response_format: { type: "json_object" } for compatibility
-    };
+      : {
+          model: safeModelName,
+          messages: [
+            {
+              role: 'user',
+              content: [
+                { type: 'text', text: prompt },
+                {
+                  type: 'image_url',
+                  image_url: {
+                    url: `data:${mimeType};base64,${base64Content}`,
+                    detail: 'auto'
+                  }
+                }
+              ]
+            }
+          ],
+          max_tokens: 4096
+        };
 
     const resp = await fetch(url, {
       method: "POST",
@@ -224,7 +239,11 @@ export default function StepTable({
     }
 
     const data = await resp.json();
-    return data.choices[0].message.content;
+    if (isEP) {
+      const out = data.output?.[0]?.content?.find((c: any) => c.type === 'output_text')?.text;
+      return out || JSON.stringify(data);
+    }
+    return data.choices?.[0]?.message?.content ?? JSON.stringify(data);
   };
 
   const generateAnalysis = async (img: ImageAsset) => {
