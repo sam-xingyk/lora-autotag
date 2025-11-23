@@ -4,7 +4,37 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AutoTag</title>
-    
+    <script>
+      (function(){
+        var orig = HTMLHeadElement.prototype.insertBefore;
+        HTMLHeadElement.prototype.insertBefore = function(newNode, refNode){
+          try {
+            if (refNode && refNode.parentNode !== this) {
+              refNode = null;
+            }
+            return orig.call(this, newNode, refNode);
+          } catch (e) {
+            try { return this.appendChild(newNode); } catch(_) { return orig.call(this, newNode, null); }
+          }
+        };
+      })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#3370ff',
+              primaryHover: '#295ac8',
+              secondary: '#64748b',
+              surface: '#ffffff',
+              background: '#f5f6f7',
+            }
+          }
+        }
+      }
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script>
