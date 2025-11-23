@@ -214,35 +214,36 @@ export default function App() {
           </div>
         </div>
 
-        {/* Content Area */}
         <div className="flex-1 overflow-hidden bg-white relative flex flex-col">
-          {step === AppStep.UPLOAD && (
-            <StepUpload 
-              images={images} 
-              setImages={setImages} 
-              namingConfig={namingConfig} 
-              setNamingConfig={setNamingConfig}
-              cropSettings={cropSettings}
-              setCropSettings={setCropSettings}
-            />
-          )}
-          {step === AppStep.CAPTION && (
-            <StepTable 
-              images={images} 
-              setImages={setImages}
-              ai={ai}
-              modelName={modelName}
-              apiProvider={apiProvider}
-              apiKey={apiKey}
-              baseUrl={baseUrl}
-              onShowSettings={() => setShowKeyModal(true)}
-            />
-          )}
-          {step === AppStep.EXPORT && (
-            <StepExport 
-              images={images} 
-            />
-          )}
+          <ErrorBoundary>
+            {step === AppStep.UPLOAD && (
+              <StepUpload 
+                images={images} 
+                setImages={setImages} 
+                namingConfig={namingConfig} 
+                setNamingConfig={setNamingConfig}
+                cropSettings={cropSettings}
+                setCropSettings={setCropSettings}
+              />
+            )}
+            {step === AppStep.CAPTION && (
+              <StepTable 
+                images={images} 
+                setImages={setImages}
+                ai={ai}
+                modelName={modelName}
+                apiProvider={apiProvider}
+                apiKey={apiKey}
+                baseUrl={baseUrl}
+                onShowSettings={() => setShowKeyModal(true)}
+              />
+            )}
+            {step === AppStep.EXPORT && (
+              <StepExport 
+                images={images} 
+              />
+            )}
+          </ErrorBoundary>
         </div>
 
         {/* Footer Navigation */}
@@ -443,4 +444,32 @@ function ApiKeyModal({
       </div>
     </div>
   );
+}
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean; message?: string }>{
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, message: String(error?.message || 'Unknown error') };
+  }
+  componentDidCatch(error: any, info: any) {
+    try { console.error('Runtime error', error, info); } catch (_) {}
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex-1 flex items-center justify-center p-8">
+          <div className="text-center">
+            <div className="text-lg font-semibold text-red-600">页面发生错误</div>
+            <div className="text-sm text-gray-500 mt-2">请打开浏览器控制台查看详情，或点击下方按钮重试。</div>
+            <button onClick={() => this.setState({ hasError: false, message: undefined })} className="mt-4 px-4 py-2 bg-primary text-white rounded">
+              重试
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children as any;
+  }
 }
