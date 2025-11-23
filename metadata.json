@@ -1,0 +1,5 @@
+{
+  "name": "AutoTag",
+  "description": "A workflow tool to upload, crop, and caption images using Gemini AI, then export as dataset pairs.",
+  "requestFramePermissions": []
+}
