@@ -4,6 +4,11 @@ export default {
     './index.html',
     './**/*.{ts,tsx}'
   ],
+  safelist: [
+    'w-[48px]',
+    'w-[80px]',
+    'w-[256px]'
+  ],
   theme: {
     extend: {
       colors: {
