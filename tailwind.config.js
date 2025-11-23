@@ -8,6 +8,7 @@ export default {
     'w-[48px]',
     'w-[80px]',
     'w-[256px]'
+    , 'min-w-[220px]', 'min-w-[200px]', 'min-w-[150px]'
   ],
   theme: {
     extend: {
